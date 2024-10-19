@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon ./src/main.js",
-    "start": "node ./src/main.js"
+    "start": "node ./src/main.js",
+    "check": "node ./src/ogg.js"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +17,11 @@
     "nodemon": "^3.1.7"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "axios": "^1.7.7",
     "config": "^3.3.12",
+    "fluent-ffmpeg": "^2.1.3",
+    "openai": "^3.2.1",
     "telegraf": "^4.16.3"
   }
 }
