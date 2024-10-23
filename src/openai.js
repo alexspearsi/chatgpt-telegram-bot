@@ -2,41 +2,58 @@ import { Configuration, OpenAIApi } from 'openai'
 import config from 'config'
 import { createReadStream } from 'fs'
 
+const CHAT_GPT_MODEL = 'gpt-3.5-turbo'
+
 class OpenAI {
-    roles = {
-        ASSISTANT: 'assistant',
-        USER: 'user',
-        SYSTEM: 'system'
-    }
-    constructor(apiKey) {
-        const configuration = new Configuration({apiKey});
-        this.openai = new OpenAIApi(configuration);
-    }
+  roles = {
+    ASSISTANT: 'assistant',
+    SYSTEM: 'system',
+    USER: 'user',
+  }
 
-    async chat(messages) {
-        try {
-            const response = await this.openai.createChatCompletion({
-                model: 'gpt-3.5-turbo',
-                messages,
-            })
-            return response.data.choices[0].message
-        } catch(e) {
-            console.log('Error while gpt chat', e.message);
-        }
-    }
+  constructor(apiKey) {
+    const configuration = new Configuration({
+      apiKey,
+    })
+    this.openai = new OpenAIApi(configuration)
+  }
 
-    async transcription(filepath) {
-        try {
-            const response = await this.openai.createTranscription(
-                createReadStream(filepath),
-                'whisper-1'
-            )
-            return response.data.text
-        } catch(e) {
-            console.log('Error while transcription', e.message);
-        }
+  async chat(messages = [], user = '') {
+    try {
+      const completion = await this.openai.createChatCompletion({
+        model: CHAT_GPT_MODEL,
+        messages,
+        user,
+      })
+
+    //   console.log('Usage', completion.data.usage)
+
+      return completion.data.choices[0].message
+    } catch (e) {
+      console.error(`Error while chat completion: ${e.message}`)
     }
+  }
+
+  async transcription(filepath) {
+    try {
+      const response = await this.openai.createTranscription(
+        createReadStream(filepath),
+        'whisper-1'
+      )
+      return response.data.text
+    } catch (e) {
+      console.error(`Error while transcription: ${e.message}`)
+    }
+  }
+
+  async image(prompt = 'a white siamese cat') {
+    const response = await this.openai.createImage({
+      prompt,
+      n: 1,
+      size: '1024x1024',
+    })
+    return response.data.data[0].url
+  }
 }
-
 
 export const openai = new OpenAI(config.get('OPENAI_KEY'))
