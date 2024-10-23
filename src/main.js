@@ -9,7 +9,7 @@ console.log(config.get('TEST_ENV'));
 
 const INITIAL_SESSION = {
     messages: [],
-}
+}  
 
 const bot = new Telegraf(config.get('TELEGRAM_TOKEN'))
 
